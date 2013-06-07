@@ -1,31 +1,30 @@
- /*If you're looking to save power in your own project, be sure to read section 9.10 of the ATmega328 
- datasheet to turn off all the bits of hardware you don't need.
+ //If you're looking to save power in your own project, be sure to read section 9.10 of the ATmega328 
+ //datasheet to turn off all the bits of hardware you don't need.
  
- The watch requires the Pro 8MHz bootloader with a few modifications:
- Internal 8MHz
- Clock div 8 cleared
- Brown out detect disabled
- BOOTRST set
- BOOSZ = 1024 
- This is to save power and open up the XTAL pins for use with a 38.786kHz external osc.
+ //The watch requires the Pro 8MHz bootloader with a few modifications:
+ //Internal 8MHz
+ //Clock div 8 cleared
+ //Brown out detect disabled
+ //BOOTRST set
+ //BOOSZ = 1024 
+ //This is to save power and open up the XTAL pins for use with a 38.786kHz external osc.
  
- So the fuse bits I get using AVR studio:
- HIGH 0xDA
- LOW 0xE2
- Extended 0xFF  
+ //So the fuse bits I get using AVR studio:
+ //HIGH 0xDA
+ //LOW 0xE2
+ //Extended 0xFF  
  
- 3,600 seconds in an hour
- 1 time check per hour, 2 seconds at 13mA
- 3,598 seconds @ 1.2uA
- (3598 / 3600) * 0.0012mA + (2 / 3600) * 13mA = 0.0084mA used per hour
+ //3,600 seconds in an hour
+ //1 time check per hour, 2 seconds at 13mA
+ //3,598 seconds @ 1.2uA
+ //(3598 / 3600) * 0.0012mA + (2 / 3600) * 13mA = 0.0084mA used per hour
  
- 200mAh / 0.0084mA = 23,809hr = 992 days = 2.7 years
+ //200mAh / 0.0084mA = 23,809hr = 992 days = 2.7 years
  
- We can't use the standard Arduino delay() or delaymicrosecond() because we shut down timer0 to save power
+ //We can't use the standard Arduino delay() or delaymicrosecond() because we shut down timer0 to save power
  
- We turn off Brown out detect because it alone uses ~16uA.
+ //We turn off Brown out detect because it alone uses ~16uA.
  
-*/
 
 #include <avr/sleep.h> //Needed for sleep_mode
 #include <avr/power.h> //Needed for powering down perihperals such as the ADC/TWI and Timers
