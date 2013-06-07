@@ -25,7 +25,7 @@
  
  We turn off Brown out detect because it alone uses ~16uA.
  
- */
+*/
 
 #include <avr/sleep.h> //Needed for sleep_mode
 #include <avr/power.h> //Needed for powering down perihperals such as the ADC/TWI and Timers
