@@ -1,4 +1,4 @@
- */If you're looking to save power in your own project, be sure to read section 9.10 of the ATmega328 
+ /*If you're looking to save power in your own project, be sure to read section 9.10 of the ATmega328 
  datasheet to turn off all the bits of hardware you don't need.
  
  The watch requires the Pro 8MHz bootloader with a few modifications:
