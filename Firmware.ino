@@ -29,8 +29,6 @@
 #include <avr/sleep.h> //Needed for sleep_mode
 #include <avr/power.h> //Needed for powering down perihperals such as the ADC/TWI and Timers
 
-//#define ENABLE_TVBGONE 
-
 //Set the 12hourMode to false for military/world time. Set it to true for American 12 hour time.
 int TwelveHourMode = true;
 
