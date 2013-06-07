@@ -1,4 +1,4 @@
- If you're looking to save power in your own project, be sure to read section 9.10 of the ATmega328 
+ //If you're looking to save power in your own project, be sure to read section 9.10 of the ATmega328 
  datasheet to turn off all the bits of hardware you don't need.
  
  The watch requires the Pro 8MHz bootloader with a few modifications:
@@ -25,34 +25,11 @@
  
  We turn off Brown out detect because it alone uses ~16uA.
  
- 7-2-2011: Currently at 1.13uA
- 
- 7-4-2011: Let's wake up every 8 seconds instead of every 1 to save even more power
- Since we don't display seconds, this should be fine
- We are now at ~1.05uA on average
- 
- 7-17-2011: 1.09uA, portable with coincell power
- Jumps to 1.47uA every 8 seconds with system clock lowered to 1MHz
- Jumps to 1.37uA every 8 seconds with system clock at 8MHz
- Let's keep the internal clock at 8MHz since it doesn't seem to help to lower the internal clock.
- 
- 8-11-2011: Adding display color so that production can more easily know what code is on the 
- pre-programmed ATmega. 
- 
- 8-19-2011: Now we can print things like "red, gren, blue, yelo".
- 
- 7-12-2012: Added TV-B-Gone off codes. TV-B-Gone by Mitch Altman and Limor Fried. This project allows BigTime to
- turn off TVs by soldering an IR LED to Arduino pin 3 and GND. I updated the enclosure design files as well to
- allow the 5MM LED to fit inside the circumference of the enclosure.
- 
  */
-#include "main.h"
 
 #include <avr/sleep.h> //Needed for sleep_mode
 #include <avr/power.h> //Needed for powering down perihperals such as the ADC/TWI and Timers
 
-//Declaring this will enable IR broadcast when you hit the time button twice
-//By default, we don't enable this
 //#define ENABLE_TVBGONE 
 
 //Set the 12hourMode to false for military/world time. Set it to true for American 12 hour time.
@@ -62,8 +39,7 @@ int TwelveHourMode = true;
 int show_time_length = 2000;
 int show_the_time = false;
 
-//You can set always_on to true and the display will stay on all the time
-//This will drain the battery in about 15 hours 
+//You can set always_on to true and the display will stay on all the time 
 int always_on = false;
 
 long seconds = 55;
@@ -77,10 +53,9 @@ int hours = 8;
 #define GREEN 2
 #define BLUE  3
 #define YELLOW  4
-int systemColor = BLUE;
+int systemColor = RED;
 int display_brightness = 15000; //A larger number makes the display more dim. This is set correctly below.
 
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 //Pin definitions
 int digit1 = 9; //Display pin 1
 int digit2 = 10; //Display pin 2
@@ -99,7 +74,6 @@ int colons = 12; //Display pin 4
 int ampm = 3; //Display pin 10
 
 int theButton = 2;
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 //The very important 32.686kHz interrupt handler
 SIGNAL(TIMER2_OVF_vect){
@@ -190,7 +164,7 @@ void setup() {
   //CLKPR = (1<<CLKPS3); //Divid the system clock by 256
 
   Serial.begin(9600);  
-  Serial.println("BigTime Testing:");
+  Serial.println("It Works:");
 
   //Now display the system color - this is mostly for production to verify
   //that the correct code is loaded onto the ATmega
@@ -279,30 +253,6 @@ void showTime() {
     //We control the brightness by modifying how long we wait between re-paints of the display
     //delayMicroseconds(display_brightness);
 
-    //If you have hit and released the button while the display is on, start the IR off sequence
-    if(digitalRead(theButton) == LOW) {
-      buttonPreviouslyHit = true;
-    }
-    else if( (buttonPreviouslyHit == true) && (digitalRead(theButton) == HIGH) ) {
-
-#ifdef ENABLE_TVBGONE
-      //Disable TIMER2 for IR control
-      TCCR2A = 0x00;
-      TCCR2B = 0;
-      ASSR = 0;
-      TIMSK2 = 0; //Enable the timer 2 interrupt
-
-      //Turn off all the things!
-      sendAllCodes();
-
-      //Setup TIMER2
-      TCCR2A = 0x00;
-      //TCCR2B = (1<<CS22)|(1<<CS20); //Set CLK/128 or overflow interrupt every 1s
-      TCCR2B = (1<<CS22)|(1<<CS21)|(1<<CS20); //Set CLK/1024 or overflow interrupt every 8s
-      ASSR = (1<<AS2); //Enable asynchronous operation
-      TIMSK2 = (1<<TOIE2); //Enable the timer 2 interrupt
-
-      quickflashLEDx(2); //Blink Colons twice letting us know it's done
 #endif
 
       return;
